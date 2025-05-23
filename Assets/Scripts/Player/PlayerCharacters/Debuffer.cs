@@ -3,13 +3,18 @@ using UnityEngine;
 public class Debuffer : MonoBehaviour, ICharacter
 {
     [SerializeField] private EntityStats _stats = null;
-    
-    void Start()
+
+    public void BasicSkill()
     {
         
     }
 
-    void Update()
+    public void SkillOne()
+    {
+        
+    }
+
+    public void SkillTwo()
     {
         
     }
