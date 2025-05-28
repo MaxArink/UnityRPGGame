@@ -1,7 +1,7 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "NewStats", menuName = "Game/EntityStats", order = 1)]
-public class EntityStats : ScriptableObject
+[CreateAssetMenu(fileName = "NewCharacterStats", menuName = "Game/CharacterStats", order = 1)]
+public class CharacterStats : ScriptableObject
 {
     [SerializeField] private float _hp = 1f;
     [SerializeField] private float _mp = 1f;

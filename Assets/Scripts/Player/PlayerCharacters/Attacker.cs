@@ -1,8 +1,19 @@
 using UnityEngine;
 
+/// <summary>
+/// Attacker is de kan ook de naam van de character zijn 
+/// </summary>
 public class Attacker : MonoBehaviour, ICharacter
 {
-    [SerializeField] private EntityStats _stats = null;
+    [SerializeField] private CharacterStats _stats = null;
+    [SerializeField] private Role _role = null;
+
+    public Role Role { get => _role; }
+
+    public void CharacterInfo()
+    {
+        Debug.Log($"Character: {_stats}, Role: {_role},\n Stats: HP.{_stats.Hp}, MP.{_stats.Mp}, ATK.{_stats.Atk}, DEF.{_stats.Def}, Speed.{_stats.Speed}, Taunt.{_role.Taunt}");
+    }
 
     public void BasicSkill()
     {

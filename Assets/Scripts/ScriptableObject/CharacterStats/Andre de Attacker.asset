@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fbfa5304945ef394481cf6f745a5e810, type: 3}
-  m_Name: Healer
+  m_Name: Andre de Attacker
   m_EditorClassIdentifier: 
-  _hp: 80
-  _mp: 25
-  _atk: 5
+  _hp: 100
+  _mp: 10
+  _atk: 15
   _def: 10
-  _speed: 12
+  _speed: 10

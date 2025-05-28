@@ -41,5 +41,8 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: EntitiLayer
+    uniqueID: 407469777
+    locked: 0
   m_RenderingLayers:
   - Default
