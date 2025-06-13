@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "Role", menuName = "Game/Role", order = 1)]
+[CreateAssetMenu(fileName = "Role", menuName = "Game/Role", order = 2)]
 public class Role : ScriptableObject
 {
     [SerializeField] private float _taunt = 0.5f;
