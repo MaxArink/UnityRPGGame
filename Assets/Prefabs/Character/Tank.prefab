@@ -101,9 +101,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1e0032d010ec2b45a717a1757192334, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _baseStats: {fileID: 11400000, guid: 99fbd6536c18b8a46b98c9a16da3057b, type: 2}
-  _characterStats: {fileID: 11400000, guid: fb1eec9e4e4599c4dbdb84bb64d4cca3, type: 2}
-  _role: {fileID: 11400000, guid: f6f6945fbdacef74e82010d770ae29f4, type: 2}
+  _entityData: {fileID: 11400000, guid: 603763d5f52e0bc47a8e663e69fbc567, type: 2}
 --- !u!114 &-1792584965878849268
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,43 +1,57 @@
-using NUnit.Framework;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class BattleManager : MonoBehaviour
 {
-    public static BattleManager instance {  get; private set; }
-    
+    public static BattleManager Instance { get; private set; }
+
+    public TargetingService TargetingService { get; private set; }
+    public TargetingUtils TargetingUtils { get; private set; }
+
     public event Action<Entity> OnTurnStarted;
+    public event Action<bool> OnBattleOver;
 
     [SerializeField] private List<Transform> _characterSpawnPoints;
     [SerializeField] private List<Transform> _enemySpawnPoints;
 
-    // Moet een list ophalen van jou chosen characters
-    private List<Character> _playersTeam = new List<Character>();
-    // Moet een list ophalen van de overworld enemy's enemy list
+    private List<Character> _characterTeam = new List<Character>();
     private List<Enemy> _enemyTeam = new List<Enemy>();
 
-    private List<Entity> _turnOrder = new();
+    public List<Entity> Enemies => _enemyTeam.Cast<Entity>().ToList();
+    public List<Entity> Characters => _characterTeam.Cast<Entity>().ToList();
+
+    private List<Entity> _turnOrder = new List<Entity>();
     private int _currentTurnIndex = 0;
+
+    private bool _battleStarted = false;
+    private bool _battleOver = false;
+
+    private bool _isTurnAdvancing = false;
 
     private void Awake()
     {
-        if (instance != null && instance != this)
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
+        Instance = this;
 
-        instance = this;
-        //Weet niet zeker of het makelijker is om een nieuwe aan te maken als een nieuwe gevecht begint
-        //DontDestroyOnLoad(gameObject);
+        LateAwake();
+    }
+
+    private void LateAwake()
+    {
+        TargetingService = new TargetingService(this);
+        TargetingUtils = new TargetingUtils();
     }
 
     private void Start()
     {
         ChallengeData challengeData = GameManager.instance.PendingBattleData;
-
         if (challengeData != null)
         {
             StartBattle(challengeData);
@@ -46,111 +60,102 @@ public class BattleManager : MonoBehaviour
         {
             Debug.LogWarning("No challenge data set!");
         }
-
-        //InitializeBattle();
     }
 
-    public void StartBattle(ChallengeData challengeData)
+    public void StartBattle(ChallengeData pChallengeData)
     {
-        //_enemyTeam.Clear();
-        //_playersTeam.Clear(); // Of: Load vanuit GameManager
+        if (_battleStarted)
+        {
+            Debug.LogWarning("Battle is already running!");
+            return;
+        }
 
-        SpawnPlayerTeam();
-        SpawnEnemyTeam(challengeData.EnemyLineup);
+        _battleStarted = true;
+        _battleOver = false;
 
+        ClearExistingUnits();
+        SpawnCharacterTeam();
+        SpawnEnemyTeam(pChallengeData.EnemyLineup);
         InitializeBattle();
     }
 
-    //public void SetupBattle(List<Character> players, List<Enemy> enemies)
-    //{
-    //    _playersTeam.Clear();
-    //    _playersTeam.AddRange(players);
-
-    //    _enemyTeam.Clear();
-    //    _enemyTeam.AddRange(enemies);
-
-    //    InitializeBattle();
-    //}
-
-    private void InitializeBattle()
+    private void ClearExistingUnits()
     {
+        foreach (Character c in _characterTeam)
+        {
+            if (c != null) Destroy(c.gameObject);
+        }
+        foreach (Enemy e in _enemyTeam)
+        {
+            if (e != null) Destroy(e.gameObject);
+        }
+        _characterTeam.Clear();
+        _enemyTeam.Clear();
         _turnOrder.Clear();
-        
-        _turnOrder.AddRange(_playersTeam);
-        _turnOrder.AddRange(_enemyTeam);
-
-        _turnOrder = _turnOrder.OrderByDescending(e => e.Stats.GetStatValue(StatModifier.StatType.Speed)).ToList();
-
         _currentTurnIndex = 0;
-        StartNextTurn();
     }
 
-    private void SpawnPlayerTeam()
+    private void SpawnCharacterTeam()
     {
-        List<EntityData> teamLinup = CleanUpTeamLineup(GameManager.instance.TeamLineup);
-
-        for (int i = 0; i < teamLinup.Count; i++)
+        List<EntityData> teamLineup = CleanUpCharacterLineup(GameManager.instance.TeamLineup);
+        for (int i = 0; i < teamLineup.Count; i++)
         {
-            EntityData characterData = teamLinup[i];
-            GameObject prefab = characterData.Prefab;
+            EntityData data = teamLineup[i];
+            Transform spawnPoint = i < _characterSpawnPoints.Count ? _characterSpawnPoints[i] : _characterSpawnPoints.Last();
 
-            // Pak het spawnpunt op basis van de index, of val terug op de laatste als je er te weinig hebt
-            Transform spawnPoint = (i < _characterSpawnPoints.Count) ? _characterSpawnPoints[i] : _characterSpawnPoints[_characterSpawnPoints.Count - 1];
-
-            GameObject go = Instantiate(prefab, spawnPoint.position, Quaternion.identity, _characterSpawnPoints[i]);
+            GameObject go = Instantiate(data.Prefab, spawnPoint.position, Quaternion.identity, spawnPoint);
             Character character = go.GetComponent<Character>();
-            character.Initialize(characterData);
-            _playersTeam.Add(character);
+            character.Initialize(data);
+
+            if (go.TryGetComponent<ICharacter>(out var logic))
+            {
+                logic.InitializeSkills();
+            }
+
+            _characterTeam.Add(character);
+            Debug.Log(_characterTeam.Count);
         }
     }
 
-    private List<EntityData> CleanUpTeamLineup(List<EntityData> team)
+    private List<EntityData> CleanUpCharacterLineup(List<EntityData> pTeam)
     {
-        List<EntityData> cleanedList = new List<EntityData>();
-
-        foreach (EntityData character in team)
-        {
-            if (character != null)
-                cleanedList.Add(character);
-        }
-
-        return cleanedList;
+        return pTeam.Where(c => c != null).ToList();
     }
 
-    private void SpawnEnemyTeam(List<EntityData> enemyLineup)
+    private void SpawnEnemyTeam(List<EntityData> pEnemyLineup)
     {
-        List<EntityData> cleanedList = CleanUpEnemyLineup(enemyLineup);
-
+        List<EntityData> cleanedList = CleanUpEnemyLineup(pEnemyLineup);
         for (int i = 0; i < cleanedList.Count; i++)
         {
-            EntityData enemyData = cleanedList[i];
-            GameObject prefab = enemyData.Prefab;
+            EntityData data = cleanedList[i];
+            Transform spawnPoint = i < _enemySpawnPoints.Count ? _enemySpawnPoints[i] : _enemySpawnPoints.Last();
 
-            Transform spawnPoint = (i < _enemySpawnPoints.Count) ? _enemySpawnPoints[i] : _enemySpawnPoints[_enemySpawnPoints.Count - 1];
-
-            GameObject go = Instantiate(prefab, spawnPoint.position, Quaternion.identity, spawnPoint);
+            GameObject go = Instantiate(data.Prefab, spawnPoint.position, Quaternion.identity, spawnPoint);
             Enemy enemy = go.GetComponent<Enemy>();
-            enemy.Initialize(enemyData);
+            enemy.Initialize(data);
             _enemyTeam.Add(enemy);
         }
     }
 
-    private List<EntityData> CleanUpEnemyLineup(List<EntityData> enemies)
+    private List<EntityData> CleanUpEnemyLineup(List<EntityData> pEnemies)
     {
-        List<EntityData> cleanedList = new List<EntityData>();
+        return pEnemies.Where(e => e != null).ToList();
+    }
 
-        foreach (EntityData enemy in enemies)
-        {
-            if (enemy != null)
-                cleanedList.Add(enemy);
-        }
+    private void InitializeBattle()
+    {
+        _turnOrder.Clear();
+        _turnOrder.AddRange(_characterTeam.Cast<Entity>());
+        _turnOrder.AddRange(_enemyTeam.Cast<Entity>());
 
-        return cleanedList;
+        _turnOrder = _turnOrder.OrderByDescending(e => e.Stats.GetStatValue(StatModifier.StatType.Speed)).ToList();
+        _currentTurnIndex = 0;
+        StartNextTurn();
     }
 
     private void StartNextTurn()
     {
-        if (CheckBattleOver()) 
+        if (_battleOver || CheckBattleOver())
             return;
 
         if (_currentTurnIndex >= _turnOrder.Count)
@@ -164,37 +169,115 @@ public class BattleManager : MonoBehaviour
 
         if (current is Enemy enemy)
         {
-            enemy.PerformAction(); // Enemy AI
+            enemy.PerformAction(); // AI
             EndTurn();
+        }
+        else if (current is Character character)
+        {
+            character.PerformAction(); // Player AI (auto for now)
+            // Turn end triggered inside PerformAction()
         }
     }
 
     public void EndTurn()
     {
+        if (_battleOver || _isTurnAdvancing) return;
+
+        _isTurnAdvancing = true;
         _currentTurnIndex++;
+        StartCoroutine(DelayNextTurn());
+    }
+
+    private IEnumerator DelayNextTurn()
+    {
+        yield return new WaitForSeconds(0.5f);
+        _isTurnAdvancing = false;
         StartNextTurn();
     }
 
     private bool CheckBattleOver()
     {
-        bool playersAlive = _playersTeam.Any(p => !p.IsDown);
+        if (_battleOver) return true;
+
+        bool playersAlive = _characterTeam.Any(p => !p.IsDead);
         bool enemiesAlive = _enemyTeam.Any(e => !e.IsDead);
 
         if (!enemiesAlive)
         {
             Debug.Log("PLAYERS WIN");
+            _battleOver = true;
+            OnBattleOver?.Invoke(true);
             return true;
         }
-        
+
         if (!playersAlive)
         {
             Debug.Log("ENEMIES WIN");
+            _battleOver = true;
+            OnBattleOver?.Invoke(false);
             return true;
         }
 
         return false;
     }
 
-    public void RegisterCharacter(Character c) => _playersTeam.Add(c);
+    // ** TARGETING METHODS met taunt-gewogen selectie **
+
+    public Entity GetRandomAliveEnemy()
+    {
+        List<Entity> aliveEnemies = _enemyTeam.Where(e => !e.IsDead).Cast<Entity>().ToList();
+        return GetWeightedRandomByTaunt(aliveEnemies);
+    }
+
+    public Entity GetRandomAliveCharacter()
+    {
+        List<Entity> aliveCharacters = _characterTeam.Where(c => !c.IsDead).Cast<Entity>().ToList();
+        return GetWeightedRandomByTaunt(aliveCharacters);
+    }
+
+    private Entity GetWeightedRandomByTaunt(List<Entity> pEntities)
+    {
+        if (pEntities.Count == 0) return null;
+
+        float totalTaunt = pEntities.Sum(e => e.Role.Taunt);
+        if (totalTaunt <= 0)
+            totalTaunt = pEntities.Count; // fallback
+
+        float rand = UnityEngine.Random.Range(0f, totalTaunt);
+        float cumulative = 0f;
+
+        foreach (Entity entity in pEntities)
+        {
+            float weight = entity.Role.Taunt > 0 ? entity.Role.Taunt : 1f;
+            cumulative += weight;
+            if (rand <= cumulative)
+                return entity;
+        }
+
+        return pEntities[0]; // fallback
+    }
+
+    public Entity GetFirstAliveEnemy()
+    {
+        return _enemyTeam.FirstOrDefault(e => !e.IsDead);
+    }
+
+    public Entity GetFirstAliveAlly()
+    {
+        return _characterTeam.FirstOrDefault(c => !c.IsDead);
+    }
+
+    public List<Entity> GetAliveEnemies()
+    {
+        return _enemyTeam.Where(e => !e.IsDead).Cast<Entity>().ToList();
+    }
+
+    public List<Entity> GetAliveCharacters()
+    {
+        return _characterTeam.Where(c => !c.IsDead).Cast<Entity>().ToList();
+    }
+
+    // Register methods als je ze nodig hebt (bijv. voor runtime aanmaken)
+    public void RegisterCharacter(Character c) => _characterTeam.Add(c);
     public void RegisterEnemy(Enemy e) => _enemyTeam.Add(e);
 }

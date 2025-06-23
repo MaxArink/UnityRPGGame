@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _name: Mage
   _portrait: {fileID: -2413806693520163455, guid: ebe73ca9363db456bacf42c025bb4847, type: 3}
-  _prefab: {fileID: 0}
-  _baseStats: {fileID: 0}
-  _entityStats: {fileID: 0}
-  _role: {fileID: 0}
+  _prefab: {fileID: 7103772500344300678, guid: 46a532f277e1c8144af689275fc36bd7, type: 3}
+  _baseStats: {fileID: 11400000, guid: b6e482a6254e1aa4b871b77f43eb6528, type: 2}
+  _entityStats: {fileID: 11400000, guid: fb1eec9e4e4599c4dbdb84bb64d4cca3, type: 2}
+  _role: {fileID: 11400000, guid: c4b6e09224685a44389b704f5bc8894e, type: 2}

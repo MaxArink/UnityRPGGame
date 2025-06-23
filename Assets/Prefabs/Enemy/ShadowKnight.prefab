@@ -10,10 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 8682507673538495724}
   - component: {fileID: 7447965010934019342}
-  - component: {fileID: 7134499068012451698}
-  - component: {fileID: -3272739187441473858}
+  - component: {fileID: -4375795104168382075}
+  - component: {fileID: 6307642986944794721}
   m_Layer: 0
-  m_Name: Debuffer
+  m_Name: ShadowKnight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -89,7 +89,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &7134499068012451698
+--- !u!114 &-4375795104168382075
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -98,11 +98,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 7103772500344300678}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b1e0032d010ec2b45a717a1757192334, type: 3}
+  m_Script: {fileID: 11500000, guid: 0198156d1f73e924c9a763ef687a695b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _entityData: {fileID: 11400000, guid: dae5588d37404764bbbbdb77ef42b127, type: 2}
---- !u!114 &-3272739187441473858
+  _entityData: {fileID: 11400000, guid: 9e6b8dbe983832640b5178d10a7199e6, type: 2}
+--- !u!114 &6307642986944794721
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -111,6 +111,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 7103772500344300678}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9bbd1bfb6c98bb8439484683b7bbd22b, type: 3}
+  m_Script: {fileID: 11500000, guid: 10ab4ecbb85468349ad9a222dae016e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

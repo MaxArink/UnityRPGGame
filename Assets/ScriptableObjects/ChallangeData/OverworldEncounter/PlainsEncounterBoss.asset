@@ -9,7 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7ca34010f229335439d87c0076d849be, type: 3}
-  m_Name: Boss
+  m_Script: {fileID: 11500000, guid: 9dd4efa051de2584e97ab2dbab637b02, type: 3}
+  m_Name: PlainsEncounterBoss
   m_EditorClassIdentifier: 
-  _taunt: 0
+  _enemyLineup:
+  - {fileID: 0}

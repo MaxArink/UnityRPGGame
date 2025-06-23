@@ -6,5 +6,6 @@ using System.Threading.Tasks;
 
 public interface IEnemy
 {
+    Enemy Enemy { get; }
     void BaseAction();
 }

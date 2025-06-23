@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.P))
-            BattleManager.instance.StartBattle(_challenge);
+            BattleManager.Instance.StartBattle(_challenge);
     }
 
     public void SetPendingBattleData(ChallengeData data)

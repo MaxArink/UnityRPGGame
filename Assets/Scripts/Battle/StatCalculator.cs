@@ -59,4 +59,18 @@ public class StatCalculator
 
         return value;
     }
+
+    public void TickModifiers()
+    {
+        for (int i = _modifiers.Count - 1; i >= 0; i--)
+        {
+            StatModifier mod = _modifiers[i];
+            mod.Turns--;
+
+            if (mod.Turns <= 0)
+                _modifiers.RemoveAt(i);
+            else
+                _modifiers[i] = mod; // update struct met verminderde Turns
+        }
+    }
 }
