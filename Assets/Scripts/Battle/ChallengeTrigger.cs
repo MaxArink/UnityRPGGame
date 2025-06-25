@@ -3,16 +3,21 @@
 public class ChallengeTrigger : MonoBehaviour
 {
     [SerializeField] private ChallengeData _challengeData;
+    [SerializeField] private string _battleSceneName = "BattleScene"; // <-- vul je battle scene in
 
-    public ChallengeData ChallengeData => _challengeData;
+    private bool _hasTriggered = false;
 
-    // Hier kan je bv. detecteren of de speler collideert en BattleManager aanroepen:
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter2D(Collider2D pOther)
     {
-        if (other.CompareTag("Player"))
+        if (_hasTriggered) return;
+
+        Player player = pOther.GetComponent<Player>();
+        if (player != null)
         {
-            // Start het gevecht!
-            //BattleManager.instance.StartBattle(_challengeData);
+            _hasTriggered = true;
+            GameManager.Instance.SetPendingBattleData(_challengeData);
+            Debug.Log("Start Battle");
+            SceneLoader.Instance.LoadSceneAdditive(_battleSceneName);
         }
     }
 }

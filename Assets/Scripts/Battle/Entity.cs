@@ -1,30 +1,33 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class Entity : MonoBehaviour
 {
+    public event Action<Entity> OnDie;
+
     [SerializeField] private EntityData _entityData;
 
     private BaseStats _baseStats;
     private EntityStats _characterStats;
     private Role _role;
 
-    protected List<Skill> _skills = new List<Skill>();
     protected StatCalculator _stats;
+    protected List<Skill> _skills = new List<Skill>();
 
     private float _currentHp;
     private float _maxHp;
-
-    public float CurrentHp => _currentHp;
-    public float MaxHp => _maxHp;
-
-    public StatCalculator Stats => _stats;
-    public IReadOnlyList<Skill> Skills => _skills;
 
     public BaseStats BaseStats => _baseStats;
     public EntityStats CharacterStats => _characterStats;
     public Role Role => _role;
 
+    public StatCalculator Stats => _stats;
+    public IReadOnlyList<Skill> Skills => _skills;
+
+    public float CurrentHp => _currentHp;
+    public float MaxHp => _maxHp;
     public virtual bool IsDead => _currentHp <= 0;
 
     protected virtual void Awake()
@@ -54,7 +57,6 @@ public class Entity : MonoBehaviour
     {
         if (IsDead)
         {
-            Debug.Log($"{name} is dood en kan geen actie uitvoeren.");
             BattleManager.Instance.EndTurn();
             return;
         }
@@ -65,7 +67,7 @@ public class Entity : MonoBehaviour
 
         if (target != null)
         {
-            float damage = CalculateDamage(1f);
+            float damage = CalculateDamage(1f, StatModifier.StatType.Atk);
             Debug.Log($"{name} valt {target.name} aan voor {damage} schade.");
             target.TakeDamage(damage);
         }
@@ -90,13 +92,12 @@ public class Entity : MonoBehaviour
             {
                 case SkillType.Attack:
                     // Power is een factor, bv 0.6 voor 60%
-                    float damage = CalculateDamage(pSkill.Power);
+                    float damage = CalculateDamage(pSkill.Power, pSkill.BaseStatForDamage);
                     target.TakeDamage(damage);
                     Debug.Log($"{name} valt {target.name} aan met {pSkill.Name} voor {damage} schade.");
                     break;
-
                 case SkillType.Heal:
-                    float healAmount = pSkill.Power;
+                    float healAmount = CalculateHeal(pSkill.Power, pSkill.BaseStatForDamage/*, skill.IsPercentHeal*/);
                     target.Heal(healAmount);
                     Debug.Log($"{name} geneest {target.name} voor {healAmount} HP met {pSkill.Name}.");
                     break;
@@ -108,6 +109,16 @@ public class Entity : MonoBehaviour
                         StatModifier buff = new StatModifier(pSkill.BuffType.Value, pSkill.BuffAmount, pSkill.BuffTurns, pSkill.IsBuffPercent);
                         target.ApplyBuff(buff);
                         Debug.Log($"{name} bufft {target.name} met {pSkill.BuffType.Value} +{pSkill.BuffAmount}{(pSkill.IsBuffPercent ? "%" : "")} voor {pSkill.BuffTurns} beurt(en) via {pSkill.Name}.");
+                    }
+                    break;
+
+                case SkillType.Debuff:
+                    if (pSkill.BuffType.HasValue)
+                    {
+                        StatModifier debuff = new StatModifier(pSkill.BuffType.Value, -Mathf.Abs(pSkill.BuffAmount), pSkill.BuffTurns, pSkill.IsBuffPercent);
+
+                        target.ApplyBuff(debuff); // of target.ApplyDebuff(modifier) als je die apart hebt
+                        Debug.Log($"{name} geeft een debuff aan {target.name}: {pSkill.BuffType.Value} {debuff.Value} ({pSkill.BuffTurns} beurten)");
                     }
                     break;
 
@@ -129,17 +140,34 @@ public class Entity : MonoBehaviour
         _stats.TickModifiers();
     }
 
-    protected float CalculateDamage(float pPowerMultiplier)
+    protected float CalculateDamage(float pPowerMultiplier, StatModifier.StatType pBaseStat)
     {
-        float atk = Stats.GetStatValue(StatModifier.StatType.Atk);
-        return atk * pPowerMultiplier;
+        float baseValue = Stats.GetStatValue(pBaseStat);
+        return baseValue * pPowerMultiplier;
+    }
+
+    protected float CalculateHeal(float pPowerMultiplier, StatModifier.StatType pBaseStat/*, bool pIsPercent*/)
+    {
+        float baseValue = Stats.GetStatValue(pBaseStat);
+        return baseValue * pPowerMultiplier;// als ik dat andere wil toeveogen kan dat
+
+        //if (pIsPercent)
+        //{
+        //    // Bijvoorbeeld: 0.2f = 20% van baseValue
+        //    return baseValue * pPowerMultiplier;
+        //}
+        //else
+        //{
+        //    // Bijvoorbeeld: 1.5f = flat power factor op baseValue
+        //    return baseValue * pPowerMultiplier;
+        //}
     }
 
     public virtual void TakeDamage(float pRawDamage)
     {
         float def = Stats.GetStatValue(StatModifier.StatType.Def);
-        float flatReduction = Mathf.Floor(def / 5);
-        float finalDamage = Mathf.Max(pRawDamage - flatReduction, 1f);
+        float defMultiplier = 1f - (def / (def + 200f));
+        float finalDamage = Mathf.Max(Mathf.Floor(pRawDamage * defMultiplier), 1f);
 
         _currentHp -= finalDamage;
         Debug.Log($"{name} neemt {finalDamage} schade, HP: {_currentHp}/{StatModifier.StatType.Hp}");
@@ -151,7 +179,6 @@ public class Entity : MonoBehaviour
     public virtual void Heal(float pAmount)
     {
         _currentHp = Mathf.Min(_currentHp + pAmount, MaxHp);
-        Debug.Log($"{_currentHp} en {CurrentHp}");
         Debug.Log($"{name} wordt geheeld voor {pAmount}, huidige HP: {_currentHp}/{StatModifier.StatType.Hp}");
     }
 
@@ -160,6 +187,8 @@ public class Entity : MonoBehaviour
         Debug.Log($"{name} is overleden.");
         gameObject.SetActive(false);
 
+        OnDie.Invoke(this);
+        //OnDie=null;
         //BattleManager.Instance?.RemoveFromTurnOrder(this);
     }
 

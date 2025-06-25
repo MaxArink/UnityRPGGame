@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 684b9ea3289e67b478c90a8af82bf3a0, type: 3}
   m_Name: SlimeBaseStats
   m_EditorClassIdentifier: 
-  _hp: 120
-  _atk: 10
+  _hp: 1200
+  _atk: 40
   _def: 120
   _speed: 70

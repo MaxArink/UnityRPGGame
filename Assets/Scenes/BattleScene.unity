@@ -458,12 +458,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _teamLineup:
-  - {fileID: 11400000, guid: fd5c5209d66c72c409d5edd00bca20e8, type: 2}
-  - {fileID: 11400000, guid: a2bf5dc0f83b4ba48a00278c73c97739, type: 2}
-  - {fileID: 0}
   - {fileID: 11400000, guid: 84f8360d77caedd4aaf7dad2bcd0eae8, type: 2}
-  - {fileID: 11400000, guid: 1ac697c4a6ab8a34081b91399e4f226b, type: 2}
-  _challenge: {fileID: 11400000, guid: a464644adba0d4b47b2c875271e9e4f6, type: 2}
+  - {fileID: 11400000, guid: a2bf5dc0f83b4ba48a00278c73c97739, type: 2}
+  - {fileID: 11400000, guid: dae5588d37404764bbbbdb77ef42b127, type: 2}
+  - {fileID: 11400000, guid: 603763d5f52e0bc47a8e663e69fbc567, type: 2}
+  - {fileID: 11400000, guid: 1e71fbe48cfbd49408bf8c060c06451a, type: 2}
+  _challenge: {fileID: 11400000, guid: 839fb3fcd14ee224ba71b229e410531f, type: 2}
 --- !u!4 &1445145206
 Transform:
   m_ObjectHideFlags: 0
@@ -587,7 +587,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1730097226}
   - component: {fileID: 1730097225}
-  - component: {fileID: 1730097224}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -595,14 +594,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!81 &1730097224
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1730097223}
-  m_Enabled: 1
 --- !u!20 &1730097225
 Camera:
   m_ObjectHideFlags: 0

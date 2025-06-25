@@ -47,7 +47,7 @@ public class Debuffer : MonoBehaviour, ICharacter
         Skill debuffSO = new Skill
         {
             Name = "Attack Down",
-            SkillType = SkillType.Buff,
+            SkillType = SkillType.Debuff,
             TargetType = TargetType.AOEEnemy,
             Power = 0.6f,
             BuffType = StatModifier.StatType.Atk,
@@ -80,7 +80,7 @@ public class Debuffer : MonoBehaviour, ICharacter
         Skill debuffST = new Skill
         {
             Name = "Defense Down",
-            SkillType = SkillType.Buff,
+            SkillType = SkillType.Debuff,
             TargetType = TargetType.AOEEnemy,
             Power = 0.6f,
             BuffType = StatModifier.StatType.Def,

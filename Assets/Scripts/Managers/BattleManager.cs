@@ -51,15 +51,17 @@ public class BattleManager : MonoBehaviour
 
     private void Start()
     {
-        ChallengeData challengeData = GameManager.instance.PendingBattleData;
-        if (challengeData != null)
+        StartCoroutine(WaitForChallengeDataAndStart());
+    }
+
+    private IEnumerator WaitForChallengeDataAndStart()
+    {
+        while (GameManager.Instance.PendingBattleData == null)
         {
-            StartBattle(challengeData);
+            yield return null; // wacht 1 frame
         }
-        else
-        {
-            Debug.LogWarning("No challenge data set!");
-        }
+
+        StartBattle(GameManager.Instance.PendingBattleData);
     }
 
     public void StartBattle(ChallengeData pChallengeData)
@@ -97,7 +99,7 @@ public class BattleManager : MonoBehaviour
 
     private void SpawnCharacterTeam()
     {
-        List<EntityData> teamLineup = CleanUpCharacterLineup(GameManager.instance.TeamLineup);
+        List<EntityData> teamLineup = CleanUpCharacterLineup(GameManager.Instance.TeamLineup);
         for (int i = 0; i < teamLineup.Count; i++)
         {
             EntityData data = teamLineup[i];
@@ -112,8 +114,9 @@ public class BattleManager : MonoBehaviour
                 logic.InitializeSkills();
             }
 
+            character.OnDie += HandleEntityDeath;
+
             _characterTeam.Add(character);
-            Debug.Log(_characterTeam.Count);
         }
     }
 
@@ -133,6 +136,9 @@ public class BattleManager : MonoBehaviour
             GameObject go = Instantiate(data.Prefab, spawnPoint.position, Quaternion.identity, spawnPoint);
             Enemy enemy = go.GetComponent<Enemy>();
             enemy.Initialize(data);
+
+            enemy.OnDie += HandleEntityDeath;
+
             _enemyTeam.Add(enemy);
         }
     }
@@ -161,6 +167,21 @@ public class BattleManager : MonoBehaviour
         if (_currentTurnIndex >= _turnOrder.Count)
             _currentTurnIndex = 0;
 
+        while (_turnOrder[_currentTurnIndex].IsDead)
+        {
+            _currentTurnIndex++;
+            if (_currentTurnIndex >= _turnOrder.Count)
+                _currentTurnIndex = 0;
+
+            // Voorkom infinite loop bij een fout
+            if (_turnOrder.All(e => e.IsDead))
+            {
+                _battleOver = true;
+                return;
+            }
+        }
+
+
         Entity current = _turnOrder[_currentTurnIndex];
 
         Debug.Log($"Turn: {current.name}");
@@ -169,13 +190,13 @@ public class BattleManager : MonoBehaviour
 
         if (current is Enemy enemy)
         {
-            enemy.PerformAction(); // AI
+            enemy.PerformAction();
             EndTurn();
         }
         else if (current is Character character)
         {
-            character.PerformAction(); // Player AI (auto for now)
-            // Turn end triggered inside PerformAction()
+            character.PerformAction();
+            // EndTurn() wordt binnen PerformAction aangeroepen
         }
     }
 
@@ -199,7 +220,7 @@ public class BattleManager : MonoBehaviour
     {
         if (_battleOver) return true;
 
-        bool playersAlive = _characterTeam.Any(p => !p.IsDead);
+        bool charactersAlive = _characterTeam.Any(p => !p.IsDead);
         bool enemiesAlive = _enemyTeam.Any(e => !e.IsDead);
 
         if (!enemiesAlive)
@@ -207,18 +228,42 @@ public class BattleManager : MonoBehaviour
             Debug.Log("PLAYERS WIN");
             _battleOver = true;
             OnBattleOver?.Invoke(true);
+
+            SceneLoader.Instance.UnloadScene("BattleScene");
+
             return true;
         }
 
-        if (!playersAlive)
+        if (!charactersAlive)
         {
             Debug.Log("ENEMIES WIN");
             _battleOver = true;
             OnBattleOver?.Invoke(false);
+
+            SceneLoader.Instance.UnloadScene("BattleScene");
+
             return true;
         }
 
         return false;
+    }
+
+    private void HandleEntityDeath(Entity deadEntity)
+    {
+        Debug.Log($"BattleManager noticed {deadEntity.name} died");
+
+        // Verwijder uit turn order
+        _turnOrder.Remove(deadEntity);
+
+        // Update turnIndex als nodig
+        if (_currentTurnIndex >= _turnOrder.Count)
+            _currentTurnIndex = 0;
+
+        // Informeer UI of andere systemen (indien nodig)
+        //TurnOrderUI.Instance?.RemoveEntity(deadEntity);
+
+        // Check of battle afgelopen is
+        CheckBattleOver();
     }
 
     // ** TARGETING METHODS met taunt-gewogen selectie **
@@ -235,26 +280,41 @@ public class BattleManager : MonoBehaviour
         return GetWeightedRandomByTaunt(aliveCharacters);
     }
 
+    /// <summary>  
+    /// Selects a random entity from the provided list, weighted by their taunt value.  
+    /// </summary>  
+    /// <param name="pEntities">List of entities to select from.</param>  
+    /// <returns>A randomly selected entity, weighted by taunt.</returns>  
     private Entity GetWeightedRandomByTaunt(List<Entity> pEntities)
     {
+        // Return null als er geen entities zijn om uit te kiezen  
         if (pEntities.Count == 0) return null;
 
+        // Bereken de totale taunt waarde van alle entities  
         float totalTaunt = pEntities.Sum(e => e.Role.Taunt);
-        if (totalTaunt <= 0)
-            totalTaunt = pEntities.Count; // fallback
 
+        // Als de totale taunt waarde nul of minder is, gebruik het aantal entities als fallback  
+        if (totalTaunt <= 0)
+            totalTaunt = pEntities.Count;
+
+        // Genereer een random waarde tussen 0 en de totale taunt waarde  
         float rand = UnityEngine.Random.Range(0f, totalTaunt);
         float cumulative = 0f;
 
+        // Itereer door de entities en selecteer er één op basis van gewogen taunt  
         foreach (Entity entity in pEntities)
         {
+            // Gebruik de taunt waarde van de entity als gewicht, standaard naar 1 als taunt nul is  
             float weight = entity.Role.Taunt > 0 ? entity.Role.Taunt : 1f;
             cumulative += weight;
+
+            // Return de entity als de random waarde binnen zijn cumulatieve gewicht valt  
             if (rand <= cumulative)
                 return entity;
         }
 
-        return pEntities[0]; // fallback
+        // Fallback naar de eerste entity in de lijst als er geen selectie is gemaakt  
+        return pEntities[0];
     }
 
     public Entity GetFirstAliveEnemy()

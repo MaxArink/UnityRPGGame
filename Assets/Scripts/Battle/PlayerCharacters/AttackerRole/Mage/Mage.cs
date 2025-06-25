@@ -73,6 +73,7 @@ public class Mage : MonoBehaviour, ICharacter
             SkillType = SkillType.Attack,
             TargetType = TargetType.AOEEnemy,
             Power = 1.2f,  // sterke AOE aanval, bv 100% van ATK
+            
             BuffType = StatModifier.StatType.Atk,
             BuffAmount = 10f,
             BuffTurns = 2,

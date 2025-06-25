@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 684b9ea3289e67b478c90a8af82bf3a0, type: 3}
   m_Name: ShadowKnight
   m_EditorClassIdentifier: 
-  _hp: 250
-  _atk: 60
+  _hp: 2500
+  _atk: 70
   _def: 100
   _speed: 80

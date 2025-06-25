@@ -13,8 +13,16 @@ public class PlayerMove : MonoBehaviour
 
     void Update()
     {
+        if (_input == null || _movement == null)
+            return;
+
         Vector2 movementInput = _input.GetMovementInput();
 
         _movement.Move(movementInput);
+    }
+
+    public void RefreshInputComponent()
+    {
+        _input = GetComponent<IPlayerInput>();
     }
 }

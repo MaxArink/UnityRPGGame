@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: PlainsEncounterBoss
   m_EditorClassIdentifier: 
   _enemyLineup:
-  - {fileID: 0}
+  - {fileID: 11400000, guid: 9e6b8dbe983832640b5178d10a7199e6, type: 2}

@@ -47,6 +47,7 @@ public class Enemy : Entity
         {
             _isDead = true;
             Debug.Log($"{name} is verslagen!");
+            Die();
         }
         // Extra enemy-specifieke logica...
     }

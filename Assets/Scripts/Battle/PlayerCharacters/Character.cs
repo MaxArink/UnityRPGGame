@@ -11,7 +11,10 @@ public class Character : Entity
     //private List<Skill> _skills;
 
     private bool _isDown = false;
-    public override bool IsDead => _isDown;
+    private bool _isDead = false;
+    
+    public bool IsDown => _isDown;
+    public override bool IsDead => _isDead;
 
     public List<CharacterSkill> AvailableSkills = new List<CharacterSkill>();
 
@@ -33,7 +36,6 @@ public class Character : Entity
     {
         if (Skills == null || Skills.Count == 0)
         {
-            Debug.Log(Skills.Count);
             Debug.LogWarning($"{name} heeft geen skills.");
             BattleManager.Instance.EndTurn();
 
@@ -68,12 +70,25 @@ public class Character : Entity
         base.TakeDamage((float)Math.Round(modifiedDamage));
 
 
-        if (BaseStats.Hp <= 0 && !_isDown)
+        //if (BaseStats.Hp <= 0 && !_isDown)
+        //{
+        //    _isDown = true;
+        //    Debug.Log($"{name} is verslagen!");
+
+        //}
+
+        if (BaseStats.Hp <= 0 && !_isDead)
         {
-            _isDown = true;
+            _isDead = true;
             Debug.Log($"{name} is verslagen!");
         }
         // Extra character-specifieke logica...
+    }
+
+    protected override void Die()
+    {
+        base.Die();
+        _isDead = true;
     }
 
     public Skill GetRandomSkill()

@@ -9,6 +9,8 @@ public class Skill
     public float Power; // kan attack, heal, of buff waarde zijn
     public float Range; // voor splash
 
+    public StatModifier.StatType BaseStatForDamage = StatModifier.StatType.Atk;
+
     // voor buffs
     public StatModifier.StatType? BuffType; // nullable, want niet elke skill bufft
     public float BuffAmount; // bijv. +10 def
