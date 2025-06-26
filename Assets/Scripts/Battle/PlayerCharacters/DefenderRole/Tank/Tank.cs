@@ -17,7 +17,7 @@ public class Tank : MonoBehaviour, ICharacter
         _character.SetSkills(skills);
     }
 
-    public CharacterSkill BasicSkill()
+    public SkillHandler BasicSkill()
     {
         Skill tankBS = new Skill
         {
@@ -27,7 +27,7 @@ public class Tank : MonoBehaviour, ICharacter
             Power = 0.6f
         };
 
-        return new CharacterSkill(
+        return new SkillHandler(
             tankBS,
             targets =>
             {
@@ -40,7 +40,7 @@ public class Tank : MonoBehaviour, ICharacter
             });
     }
 
-    public CharacterSkill SkillOne()
+    public SkillHandler SkillOne()
     {
         Skill tankSO = new Skill
         {
@@ -53,7 +53,7 @@ public class Tank : MonoBehaviour, ICharacter
             IsBuffPercent = true
         };
 
-        return new CharacterSkill(
+        return new SkillHandler(
             tankSO,
             targets =>
             {
@@ -69,7 +69,7 @@ public class Tank : MonoBehaviour, ICharacter
             });
     }
 
-    public CharacterSkill SkillTwo()
+    public SkillHandler SkillTwo()
     {
         Skill tankST = new Skill
         {
@@ -79,7 +79,7 @@ public class Tank : MonoBehaviour, ICharacter
             Power = 0.4f
         };
 
-        return new CharacterSkill(
+        return new SkillHandler(
             tankST,
             targets =>
             {

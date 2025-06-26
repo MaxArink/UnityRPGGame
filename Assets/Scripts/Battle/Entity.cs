@@ -18,6 +18,8 @@ public class Entity : MonoBehaviour
 
     private float _currentHp;
     private float _maxHp;
+    
+    private List<Entity> _adjacentAllies = new List<Entity>();
 
     public BaseStats BaseStats => _baseStats;
     public EntityStats CharacterStats => _characterStats;
@@ -29,6 +31,9 @@ public class Entity : MonoBehaviour
     public float CurrentHp => _currentHp;
     public float MaxHp => _maxHp;
     public virtual bool IsDead => _currentHp <= 0;
+
+    public List<Entity> AdjacentAllies => _adjacentAllies;
+
 
     protected virtual void Awake()
     {
@@ -195,5 +200,25 @@ public class Entity : MonoBehaviour
     public void SetSkills(List<Skill> pSkills)
     {
         _skills = pSkills ?? new List<Skill>();
+    }
+
+    // Helper om buren up-to-date te houden
+    public void UpdateAdjacents(List<Entity> pAllAllies)
+    {
+        AdjacentAllies.Clear();
+
+        // Simpel voorbeeld: voeg buren toe die 'naast' deze entity staan
+        // Je bepaalt hier de logica, bijvoorbeeld afstand of custom rules
+
+        float maxDistance = 2.0f; // bv max 2 units afstand om als buur te tellen
+
+        foreach (var ally in pAllAllies)
+        {
+            if (ally == this) continue;
+            if (Vector3.Distance(transform.position, ally.transform.position) <= maxDistance && !ally.IsDead)
+            {
+                AdjacentAllies.Add(ally);
+            }
+        }
     }
 }

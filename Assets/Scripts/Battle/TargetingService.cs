@@ -11,7 +11,7 @@ public class TargetingService : ITargetingService
         _battleManager = pBattleManager;
     }
 
-    public List<Entity> GetTargets(TargetingType pTargetingType, Entity pUser, bool pTargetsAllies)
+    public List<Entity> GetTargets(TargetingType pTargetingType, Entity pUser, bool pTargetsAllies = false)
     {
         // Bepaal bondgenoten en vijanden van de gebruiker
         List<Entity> allies;
@@ -28,7 +28,7 @@ public class TargetingService : ITargetingService
             enemies = _battleManager.Characters.Cast<Entity>().Where(e => !e.IsDead).ToList();
         }
 
-        var targetGroup = pTargetsAllies ? allies : enemies;
+        List<Entity> targetGroup = pTargetsAllies ? allies : enemies;
 
         switch (pTargetingType)
         {
@@ -36,7 +36,8 @@ public class TargetingService : ITargetingService
                 return new List<Entity> { pUser };
 
             case TargetingType.SingleTarget:
-                return targetGroup.Take(1).ToList();
+                Entity chosen = _battleManager.GetWeightedRandomByTaunt(targetGroup);
+                return chosen != null ? new List<Entity> { chosen } : new List<Entity>();
 
             case TargetingType.Splash:
                 // Bijvoorbeeld eerste 3 vijanden/bondgenoten

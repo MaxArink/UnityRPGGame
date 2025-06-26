@@ -16,16 +16,11 @@ public class Character : Entity
     public bool IsDown => _isDown;
     public override bool IsDead => _isDead;
 
-    public List<CharacterSkill> AvailableSkills = new List<CharacterSkill>();
-
-
     protected override void Awake()
     {
         base.Awake();
         _character = GetComponent<ICharacter>();
     }
-
-
 
     public override void Initialize(EntityData pData)
     {
@@ -57,8 +52,6 @@ public class Character : Entity
         ExecuteSkill(chosenSkill, targets);
 
         BattleManager.Instance.EndTurn();
-
-        //base.PerformAction();
     }
 
     public override void TakeDamage(float pRawDamage)

@@ -18,22 +18,22 @@ public class SceneLoader : MonoBehaviour
     }
 
     /// <summary>
+    /// Vervangt de huidige scene met een andere (niet additief).
+    /// </summary>
+    public void LoadSceneSingle(string sceneName)
+    {
+        SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
+    }
+    
+    /// <summary>
     /// Laadt een nieuwe scene als additive (bovenop de huidige).
     /// </summary>
     public void LoadSceneAdditive(string sceneName)
     {
         if (!SceneManager.GetSceneByName(sceneName).isLoaded)
         {
-            SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+            SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
         }
-    }
-
-    /// <summary>
-    /// Vervangt de huidige scene met een andere (niet additief).
-    /// </summary>
-    public void LoadSceneSingle(string sceneName)
-    {
-        SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
     }
 
     /// <summary>

@@ -1005,6 +1005,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 603763d5f52e0bc47a8e663e69fbc567, type: 2}
   - {fileID: 11400000, guid: dae5588d37404764bbbbdb77ef42b127, type: 2}
   _challenge: {fileID: 11400000, guid: a464644adba0d4b47b2c875271e9e4f6, type: 2}
+  _totalEnemiesToDefeat: 4
+  _winSceneName: WinScene
 --- !u!4 &311798974
 Transform:
   m_ObjectHideFlags: 0

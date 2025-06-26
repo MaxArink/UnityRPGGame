@@ -10,9 +10,11 @@ public class BattleManager : MonoBehaviour
 
     public TargetingService TargetingService { get; private set; }
     public TargetingUtils TargetingUtils { get; private set; }
+    public AdjacencyService AdjacencyService { get; private set; }
 
     public event Action<Entity> OnTurnStarted;
     public event Action<bool> OnBattleOver;
+    public event Action<bool> OnBattleEnded; // true = winst, false = verlies
 
     [SerializeField] private List<Transform> _characterSpawnPoints;
     [SerializeField] private List<Transform> _enemySpawnPoints;
@@ -47,10 +49,12 @@ public class BattleManager : MonoBehaviour
     {
         TargetingService = new TargetingService(this);
         TargetingUtils = new TargetingUtils();
+        AdjacencyService = new AdjacencyService();
     }
 
     private void Start()
     {
+        GameManager.Instance.RegisterBattleManager(this);
         StartCoroutine(WaitForChallengeDataAndStart());
     }
 
@@ -137,6 +141,11 @@ public class BattleManager : MonoBehaviour
             Enemy enemy = go.GetComponent<Enemy>();
             enemy.Initialize(data);
 
+            if (go.TryGetComponent<IEnemy>(out var logic))
+            {
+                logic.InitializeSkills();
+            }
+
             enemy.OnDie += HandleEntityDeath;
 
             _enemyTeam.Add(enemy);
@@ -156,6 +165,10 @@ public class BattleManager : MonoBehaviour
 
         _turnOrder = _turnOrder.OrderByDescending(e => e.Stats.GetStatValue(StatModifier.StatType.Speed)).ToList();
         _currentTurnIndex = 0;
+
+        //AdjacencyService.AssignAdjacency(_characterTeam.Cast<Entity>().ToList());
+        //AdjacencyService.AssignAdjacency(_enemyTeam.Cast<Entity>().ToList());
+
         StartNextTurn();
     }
 
@@ -216,44 +229,59 @@ public class BattleManager : MonoBehaviour
         StartNextTurn();
     }
 
+    /// <summary>  
+    /// Checks if the battle is over by evaluating the state of both teams.  
+    /// Triggers the OnBattleOver event and unloads the battle scene if over.  
+    /// </summary>  
+    /// <returns>True if the battle is over, otherwise false.</returns>
     private bool CheckBattleOver()
     {
+        // If the battle is already marked as over, return true immediately.  
         if (_battleOver) return true;
 
+        // Check if there are any alive characters and enemies.  
         bool charactersAlive = _characterTeam.Any(p => !p.IsDead);
         bool enemiesAlive = _enemyTeam.Any(e => !e.IsDead);
 
+        // If no enemies are alive, the players win.  
         if (!enemiesAlive)
         {
             Debug.Log("PLAYERS WIN");
             _battleOver = true;
             OnBattleOver?.Invoke(true);
 
-            SceneLoader.Instance.UnloadScene("BattleScene");
+            // Register the enemy defeat in the GameManager.  
+            //GameManager.Instance.RegisterEnemyDefeat();
+
+            // Unload the battle scene.  
+            //SceneLoader.Instance.UnloadScene("BattleScene");
 
             return true;
         }
 
+        // If no characters are alive, the enemies win.  
         if (!charactersAlive)
         {
             Debug.Log("ENEMIES WIN");
             _battleOver = true;
             OnBattleOver?.Invoke(false);
 
-            SceneLoader.Instance.UnloadScene("BattleScene");
+            // Unload the battle scene.  
+            //SceneLoader.Instance.UnloadScene("BattleScene");
 
             return true;
         }
 
+        // If both teams have alive members, the battle continues.  
         return false;
     }
 
-    private void HandleEntityDeath(Entity deadEntity)
+    private void HandleEntityDeath(Entity pDeadEntity)
     {
-        Debug.Log($"BattleManager noticed {deadEntity.name} died");
+        Debug.Log($"BattleManager noticed {pDeadEntity.name} died");
 
         // Verwijder uit turn order
-        _turnOrder.Remove(deadEntity);
+        _turnOrder.Remove(pDeadEntity);
 
         // Update turnIndex als nodig
         if (_currentTurnIndex >= _turnOrder.Count)
@@ -285,7 +313,7 @@ public class BattleManager : MonoBehaviour
     /// </summary>  
     /// <param name="pEntities">List of entities to select from.</param>  
     /// <returns>A randomly selected entity, weighted by taunt.</returns>  
-    private Entity GetWeightedRandomByTaunt(List<Entity> pEntities)
+    public Entity GetWeightedRandomByTaunt(List<Entity> pEntities)
     {
         // Return null als er geen entities zijn om uit te kiezen  
         if (pEntities.Count == 0) return null;

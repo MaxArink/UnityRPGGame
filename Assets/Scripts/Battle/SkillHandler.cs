@@ -1,17 +1,17 @@
 ﻿using System.Collections.Generic;
 using System;
 
-public class CharacterSkill
+public class SkillHandler
 {
     public string Name => Skill.Name;
     public TargetingType TargetingType => BattleManager.Instance.TargetingUtils.ConvertToTargetingType(Skill.TargetType);
     public Action<List<Entity>> Action { get; }
     public Skill Skill { get; }
 
-    public CharacterSkill(Skill skill, Action<List<Entity>> action)
+    public SkillHandler(Skill pSkill, Action<List<Entity>> pAction)
     {
-        Skill = skill;
-        Action = action;
+        Skill = pSkill;
+        Action = pAction;
     }
 
     public Skill ToSkill() => Skill;

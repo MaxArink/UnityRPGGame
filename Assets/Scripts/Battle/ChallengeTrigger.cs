@@ -7,6 +7,12 @@ public class ChallengeTrigger : MonoBehaviour
 
     private bool _hasTriggered = false;
 
+    public void ResetTrigger()
+    {
+        _hasTriggered = false;
+        gameObject.SetActive(true); // ook heractiveren, als je hem ooit hebt uitgezet
+    }
+
     private void OnTriggerEnter2D(Collider2D pOther)
     {
         if (_hasTriggered) return;
@@ -15,9 +21,19 @@ public class ChallengeTrigger : MonoBehaviour
         if (player != null)
         {
             _hasTriggered = true;
-            GameManager.Instance.SetPendingBattleData(_challengeData);
+            GameManager.Instance.SetPendingBattleData(_challengeData, this);
             Debug.Log("Start Battle");
             SceneLoader.Instance.LoadSceneAdditive(_battleSceneName);
         }
+    }
+
+    public void OnBattleWon()
+    {
+        gameObject.SetActive(false);  // verberg de overworld enemy bij winst
+    }
+
+    public void OnBattleLost()
+    {
+        ResetTrigger(); // reset zodat je opnieuw kan triggeren
     }
 }

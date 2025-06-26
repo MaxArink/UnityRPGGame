@@ -19,7 +19,7 @@ public class Buffer : MonoBehaviour, ICharacter
         _character.SetSkills(skills);
     }
 
-    public CharacterSkill BasicSkill()
+    public SkillHandler BasicSkill()
     {
         Skill bufferBS = new Skill
         {
@@ -29,7 +29,7 @@ public class Buffer : MonoBehaviour, ICharacter
             Power = 0.6f
         };
 
-        return new CharacterSkill(
+        return new SkillHandler(
             bufferBS,
             targets =>
             {
@@ -42,7 +42,7 @@ public class Buffer : MonoBehaviour, ICharacter
             });
     }
 
-    public CharacterSkill SkillOne()
+    public SkillHandler SkillOne()
     {
         Skill bufferSO = new Skill
         {
@@ -55,7 +55,7 @@ public class Buffer : MonoBehaviour, ICharacter
             IsBuffPercent = true
         };
 
-        return new CharacterSkill(
+        return new SkillHandler(
             bufferSO,
             targets =>
             {
@@ -74,7 +74,7 @@ public class Buffer : MonoBehaviour, ICharacter
             });
     }
 
-    public CharacterSkill SkillTwo()
+    public SkillHandler SkillTwo()
     {
         Skill bufferST = new Skill
         {
@@ -87,7 +87,7 @@ public class Buffer : MonoBehaviour, ICharacter
             IsBuffPercent = true
         };
 
-        return new CharacterSkill(
+        return new SkillHandler(
             bufferST,
             targets =>
             {

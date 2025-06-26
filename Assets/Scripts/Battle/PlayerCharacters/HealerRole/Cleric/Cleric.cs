@@ -19,7 +19,7 @@ public class Cleric : MonoBehaviour, ICharacter
         _character.SetSkills(skills);
     }
 
-    public CharacterSkill BasicSkill()
+    public SkillHandler BasicSkill()
     {
         Skill clericBS = new Skill
         {
@@ -29,7 +29,7 @@ public class Cleric : MonoBehaviour, ICharacter
             Power = 0.3f
         };
 
-        return new CharacterSkill(
+        return new SkillHandler(
             clericBS,
             targets =>
             {
@@ -42,7 +42,7 @@ public class Cleric : MonoBehaviour, ICharacter
             });
     }
 
-    public CharacterSkill SkillOne()
+    public SkillHandler SkillOne()
     {
         Skill clericSO = new Skill
         {
@@ -52,7 +52,7 @@ public class Cleric : MonoBehaviour, ICharacter
             Power = 1f
         };
 
-        return new CharacterSkill(
+        return new SkillHandler(
             clericSO,
             targets =>
             {
@@ -66,7 +66,7 @@ public class Cleric : MonoBehaviour, ICharacter
             });
     }
 
-    public CharacterSkill SkillTwo()
+    public SkillHandler SkillTwo()
     {
         Skill clericST = new Skill
         {
@@ -76,7 +76,7 @@ public class Cleric : MonoBehaviour, ICharacter
             Power = 0.5f
         };
 
-        return new CharacterSkill(
+        return new SkillHandler(
             clericST,
             targets =>
             {

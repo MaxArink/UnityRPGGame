@@ -19,7 +19,7 @@ public class Debuffer : MonoBehaviour, ICharacter
         _character.SetSkills(skills);
     }
 
-    public CharacterSkill BasicSkill()
+    public SkillHandler BasicSkill()
     {
         Skill debufferBS = new Skill
         {
@@ -29,7 +29,7 @@ public class Debuffer : MonoBehaviour, ICharacter
             Power = 0.6f
         };
 
-        return new CharacterSkill(
+        return new SkillHandler(
             debufferBS,
             targets =>
             {
@@ -42,7 +42,7 @@ public class Debuffer : MonoBehaviour, ICharacter
             });
     }
 
-    public CharacterSkill SkillOne()
+    public SkillHandler SkillOne()
     {
         Skill debuffSO = new Skill
         {
@@ -56,7 +56,7 @@ public class Debuffer : MonoBehaviour, ICharacter
             IsBuffPercent = true,
         };
 
-        return new CharacterSkill(
+        return new SkillHandler(
             debuffSO,
             targets =>
             {
@@ -75,7 +75,7 @@ public class Debuffer : MonoBehaviour, ICharacter
             });
     }
 
-    public CharacterSkill SkillTwo()
+    public SkillHandler SkillTwo()
     {
         Skill debuffST = new Skill
         {
@@ -89,7 +89,7 @@ public class Debuffer : MonoBehaviour, ICharacter
             IsBuffPercent = true
         };
 
-        return new CharacterSkill(
+        return new SkillHandler(
             debuffST,
             targets =>
             {

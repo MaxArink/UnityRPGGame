@@ -20,7 +20,7 @@ public class Archer : MonoBehaviour, ICharacter
         _character.SetSkills(skills);
     }
 
-    public CharacterSkill BasicSkill()
+    public SkillHandler BasicSkill()
     {
         Skill archerBS = new Skill
         {
@@ -30,7 +30,7 @@ public class Archer : MonoBehaviour, ICharacter
             Power = 1.0f
         };
 
-        return new CharacterSkill(
+        return new SkillHandler(
             archerBS,
             targets =>
             {
@@ -43,7 +43,7 @@ public class Archer : MonoBehaviour, ICharacter
             });
     }
 
-    public CharacterSkill SkillOne()
+    public SkillHandler SkillOne()
     {
         Skill archerSO = new Skill
         {
@@ -56,7 +56,7 @@ public class Archer : MonoBehaviour, ICharacter
             IsBuffPercent = true
         };
 
-        return new CharacterSkill(
+        return new SkillHandler(
             archerSO,
             targets =>
             {
@@ -77,7 +77,7 @@ public class Archer : MonoBehaviour, ICharacter
             });
     }
 
-    public CharacterSkill SkillTwo()
+    public SkillHandler SkillTwo()
     {
         Skill archerST = new Skill
         {
@@ -87,7 +87,7 @@ public class Archer : MonoBehaviour, ICharacter
             Power = 2.0f
         };
 
-        return new CharacterSkill(
+        return new SkillHandler(
             archerST,
             targets =>
             {
