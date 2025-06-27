@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _name: SkyPriest
   _portrait: {fileID: -2413806693520163455, guid: ebe73ca9363db456bacf42c025bb4847, type: 3}
-  _prefab: {fileID: 7103772500344300678, guid: 79d8b9539f5549a49ba013927fc63d1b, type: 3}
+  _prefab: {fileID: 7103772500344300678, guid: 04dbcc4155c8cb943b445fcc817952ae, type: 3}
   _baseStats: {fileID: 11400000, guid: 8a00eb62c42b2da46957fcf4887bd2c1, type: 2}
   _entityStats: {fileID: 11400000, guid: fb1eec9e4e4599c4dbdb84bb64d4cca3, type: 2}
   _role: {fileID: 11400000, guid: c7860d4793f54d4428ff9247c5d9d86a, type: 2}

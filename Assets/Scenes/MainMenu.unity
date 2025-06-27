@@ -299,10 +299,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _teamLineup:
   - {fileID: 11400000, guid: 603763d5f52e0bc47a8e663e69fbc567, type: 2}
-  - {fileID: 11400000, guid: a2bf5dc0f83b4ba48a00278c73c97739, type: 2}
-  - {fileID: 11400000, guid: 84f8360d77caedd4aaf7dad2bcd0eae8, type: 2}
-  - {fileID: 11400000, guid: dae5588d37404764bbbbdb77ef42b127, type: 2}
+  - {fileID: 11400000, guid: 1ac697c4a6ab8a34081b91399e4f226b, type: 2}
   - {fileID: 11400000, guid: 1e71fbe48cfbd49408bf8c060c06451a, type: 2}
+  - {fileID: 11400000, guid: 96585873cdb0bfa42b8d3dffb156180f, type: 2}
+  - {fileID: 11400000, guid: c3cbe00203d584046a8c1861566d98d6, type: 2}
   _challenge: {fileID: 0}
   _totalEnemiesToDefeat: 4
   _winSceneName: WinScene
