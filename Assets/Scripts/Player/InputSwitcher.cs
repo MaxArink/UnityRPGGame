@@ -6,7 +6,7 @@ public class InputSwitcher : MonoBehaviour
     [SerializeField] private GameObject _player; // GameObject met PlayerMove
     [SerializeField] private TextMeshProUGUI _inputStatusText;
 
-    private bool _usingKeyboard = false;
+    private bool _usingKeyboard = true;
 
     private void Start()
     {
@@ -25,17 +25,17 @@ public class InputSwitcher : MonoBehaviour
             Destroy(controllerInput);
 
         // Voeg de gewenste inputcomponent toe
-        if (_usingKeyboard)
+        if (_usingKeyboard == false)
         {
             _player.AddComponent<PlayerInputController>();
             UpdateStatusText("Controller");
-            Debug.Log("Switched to controller input");
+            Debug.Log("Switched to keyboard input");
         }
         else
         {
             _player.AddComponent<PlayerInputKeyboard>();
             UpdateStatusText("Keyboard");
-            Debug.Log("Switched to keyboard input");
+            Debug.Log("Switched to controller input");
         }
 
         _usingKeyboard = !_usingKeyboard;
@@ -45,11 +45,11 @@ public class InputSwitcher : MonoBehaviour
         move.RefreshInputComponent();
     }
 
-    private void UpdateStatusText(string inputName)
+    private void UpdateStatusText(string pInputName)
     {
         if (_inputStatusText != null)
         {
-            _inputStatusText.text = $"Active Input: <b>{inputName}</b>";
+            _inputStatusText.text = $"Active Input: <b>{pInputName}</b>";
         }
     }
 }
