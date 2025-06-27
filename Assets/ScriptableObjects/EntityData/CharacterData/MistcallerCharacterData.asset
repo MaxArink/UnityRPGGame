@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _name: Mistcaller
   _portrait: {fileID: -2413806693520163455, guid: ebe73ca9363db456bacf42c025bb4847, type: 3}
-  _prefab: {fileID: 7103772500344300678, guid: acb4f83a58299d5468d4c1bf8c556cac, type: 3}
+  _prefab: {fileID: 7103772500344300678, guid: b3db457b22881c342b3c449795925dcf, type: 3}
   _baseStats: {fileID: 11400000, guid: 0d392295f6081d04b9f8a04bcbd4403c, type: 2}
   _entityStats: {fileID: 11400000, guid: fb1eec9e4e4599c4dbdb84bb64d4cca3, type: 2}
   _role: {fileID: 11400000, guid: 8bc8cb7db3a8ad94cae034ed4b235995, type: 2}
