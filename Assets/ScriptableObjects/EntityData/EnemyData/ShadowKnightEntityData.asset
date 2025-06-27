@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5c77caa9a942c744b29acf4a4884213, type: 3}
+  m_Name: ShadowKnightEntityData
+  m_EditorClassIdentifier: 
+  _name: Shadow Knight
+  _portrait: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
+  _prefab: {fileID: 7103772500344300678, guid: 1adc0dbfeb8ae0b4ead3c7f74554af86, type: 3}
+  _baseStats: {fileID: 11400000, guid: 01addc4d8ccadc54f94a3f51a7f77204, type: 2}
+  _entityStats: {fileID: 11400000, guid: 6303ac916d219d141b66708079d6dbf6, type: 2}
+  _role: {fileID: 11400000, guid: f266925f4d434a54ea7a863649307215, type: 2}
