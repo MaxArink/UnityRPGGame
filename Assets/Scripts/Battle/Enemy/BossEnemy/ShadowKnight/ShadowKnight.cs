@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class ShadowKnight : MonoBehaviour
+public class ShadowKnight : MonoBehaviour, IEnemy
 {
-    private Enemy Enemy => GetComponent<Enemy>();
+    public Enemy Enemy => GetComponent<Enemy>();
     private float _atk => Enemy.Stats.GetStatValue(StatModifier.StatType.Atk);
 
     public void InitializeSkills()

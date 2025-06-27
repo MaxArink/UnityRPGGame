@@ -3,9 +3,13 @@ using UnityEngine;
 
 public class Tank : MonoBehaviour, ICharacter
 {
+    // Shortcut naar Character-component
     private Character _character => GetComponent<Character>();
+
+    // Haal de Defense-stat op van de Character
     private float _def => _character.Stats.GetStatValue(StatModifier.StatType.Def);
 
+    // Initialiseer en wijs de skills toe aan de Character
     public void InitializeSkills()
     {
         List<Skill> skills = new List<Skill>
@@ -17,6 +21,7 @@ public class Tank : MonoBehaviour, ICharacter
         _character.SetSkills(skills);
     }
 
+    // Basisaanval: schade gebaseerd op defense aan één vijand
     public SkillHandler BasicSkill()
     {
         Skill tankBS = new Skill
@@ -31,6 +36,7 @@ public class Tank : MonoBehaviour, ICharacter
             tankBS,
             targets =>
             {
+                // Check of er een doel is en breng schade toe
                 if (targets.Count > 0 && targets[0] is Enemy enemy)
                 {
                     float dmg = _def * tankBS.Power;
@@ -40,6 +46,7 @@ public class Tank : MonoBehaviour, ICharacter
             });
     }
 
+    // Buff skill: verhoogt eigen defense voor enkele beurten
     public SkillHandler SkillOne()
     {
         Skill tankSO = new Skill
@@ -48,7 +55,7 @@ public class Tank : MonoBehaviour, ICharacter
             SkillType = SkillType.Buff,
             TargetType = TargetType.Self,
             BuffType = StatModifier.StatType.Def,
-            BuffAmount = 30f, // Bijvoorbeeld +30 defense
+            BuffAmount = 30f,
             BuffTurns = 2,
             IsBuffPercent = true
         };
@@ -64,11 +71,13 @@ public class Tank : MonoBehaviour, ICharacter
                     tankSO.IsBuffPercent
                 );
 
+                // Pas de buff toe op zichzelf
                 _character.ApplyBuff(buff);
                 Debug.Log($"{_character.name} versterkt zichzelf met +{tankSO.BuffAmount} DEF voor {tankSO.BuffTurns} beurten.");
             });
     }
 
+    // AOE aanval: schade gebaseerd op defense aan alle vijanden in gebied
     public SkillHandler SkillTwo()
     {
         Skill tankST = new Skill
@@ -84,6 +93,7 @@ public class Tank : MonoBehaviour, ICharacter
             targets =>
             {
                 float dmg = _def * tankST.Power;
+                // Breng schade toe aan alle doelen in de lijst
                 foreach (Entity enemy in targets)
                 {
                     enemy.TakeDamage(dmg);

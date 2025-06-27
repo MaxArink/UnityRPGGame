@@ -4,10 +4,13 @@ using UnityEngine;
 
 public class Debuffer : MonoBehaviour, ICharacter
 {
+    // Shortcut naar de Character-component
     private Character _character => GetComponent<Character>();
 
+    // Haal de Attack-stat op van de Character
     private float _atk => _character.Stats.GetStatValue(StatModifier.StatType.Atk);
 
+    // Initialiseer de vaardighedenlijst met de gedefinieerde skills
     public void InitializeSkills()
     {
         List<Skill> skills = new List<Skill>
@@ -19,6 +22,7 @@ public class Debuffer : MonoBehaviour, ICharacter
         _character.SetSkills(skills);
     }
 
+    // Basisaanval: schade aan één vijand berekenen en toepassen
     public SkillHandler BasicSkill()
     {
         Skill debufferBS = new Skill
@@ -33,6 +37,7 @@ public class Debuffer : MonoBehaviour, ICharacter
             debufferBS,
             targets =>
             {
+                // Check of er een geldig doel is en cast naar Enemy
                 if (targets.Count > 0 && targets[0] is Enemy enemy)
                 {
                     float dmg = _atk * debufferBS.Power;
@@ -42,6 +47,7 @@ public class Debuffer : MonoBehaviour, ICharacter
             });
     }
 
+    // Eerste vaardigheid: verlaagt aanvalskracht van meerdere vijanden (AOE debuff)
     public SkillHandler SkillOne()
     {
         Skill debuffSO = new Skill
@@ -60,13 +66,15 @@ public class Debuffer : MonoBehaviour, ICharacter
             debuffSO,
             targets =>
             {
+                // Maak een aanval debuff aan met specifieke duur en waarde
                 StatModifier atkDebuff = new StatModifier(
                     StatModifier.StatType.Atk,
                     debuffSO.BuffAmount,
-                    debuffSO.BuffTurns,     // turns
-                    debuffSO.IsBuffPercent   // procentueel
+                    debuffSO.BuffTurns,
+                    debuffSO.IsBuffPercent
                 );
 
+                // Pas de debuff toe op elk doelwit en log dit
                 foreach (Entity target in targets)
                 {
                     target.ApplyBuff(atkDebuff);
@@ -75,6 +83,7 @@ public class Debuffer : MonoBehaviour, ICharacter
             });
     }
 
+    // Tweede vaardigheid: verlaagt verdediging van meerdere vijanden (AOE debuff)
     public SkillHandler SkillTwo()
     {
         Skill debuffST = new Skill
@@ -93,13 +102,15 @@ public class Debuffer : MonoBehaviour, ICharacter
             debuffST,
             targets =>
             {
+                // Maak een verdediging debuff aan met specifieke duur en waarde
                 StatModifier defDebuff = new StatModifier(
                     StatModifier.StatType.Def,
                     debuffST.BuffAmount,
-                    debuffST.BuffTurns,     // turns
-                    debuffST.IsBuffPercent   // procentueel
+                    debuffST.BuffTurns,
+                    debuffST.IsBuffPercent
                 );
 
+                // Pas de debuff toe op elk doelwit en log dit
                 foreach (Entity target in targets)
                 {
                     target.ApplyBuff(defDebuff);

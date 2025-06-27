@@ -163,11 +163,13 @@ public class BattleManager : MonoBehaviour
         _turnOrder.AddRange(_characterTeam.Cast<Entity>());
         _turnOrder.AddRange(_enemyTeam.Cast<Entity>());
 
+        // Sorteer beurtvolgorde op snelheid (hoog naar laag)
         _turnOrder = _turnOrder.OrderByDescending(e => e.Stats.GetStatValue(StatModifier.StatType.Speed)).ToList();
         _currentTurnIndex = 0;
 
-        //AdjacencyService.AssignAdjacency(_characterTeam.Cast<Entity>().ToList());
-        //AdjacencyService.AssignAdjacency(_enemyTeam.Cast<Entity>().ToList());
+        // Optioneel: kan gebruikt worden om nabijheid relaties te bepalen
+        // AdjacencyService.AssignAdjacency(_characterTeam.Cast<Entity>().ToList());
+        // AdjacencyService.AssignAdjacency(_enemyTeam.Cast<Entity>().ToList());
 
         StartNextTurn();
     }
@@ -180,20 +182,20 @@ public class BattleManager : MonoBehaviour
         if (_currentTurnIndex >= _turnOrder.Count)
             _currentTurnIndex = 0;
 
+        // Skip dode entiteiten in beurtvolgorde
         while (_turnOrder[_currentTurnIndex].IsDead)
         {
             _currentTurnIndex++;
             if (_currentTurnIndex >= _turnOrder.Count)
                 _currentTurnIndex = 0;
 
-            // Voorkom infinite loop bij een fout
+            // Voorkom oneindige loop bij fouten: als iedereen dood is, markeer battle over
             if (_turnOrder.All(e => e.IsDead))
             {
                 _battleOver = true;
                 return;
             }
         }
-
 
         Entity current = _turnOrder[_currentTurnIndex];
 
@@ -209,7 +211,7 @@ public class BattleManager : MonoBehaviour
         else if (current is Character character)
         {
             character.PerformAction();
-            // EndTurn() wordt binnen PerformAction aangeroepen
+            // EndTurn() wordt binnen PerformAction aangeroepen voor Characters
         }
     }
 
@@ -229,50 +231,37 @@ public class BattleManager : MonoBehaviour
         StartNextTurn();
     }
 
-    /// <summary>  
-    /// Checks if the battle is over by evaluating the state of both teams.  
-    /// Triggers the OnBattleOver event and unloads the battle scene if over.  
-    /// </summary>  
-    /// <returns>True if the battle is over, otherwise false.</returns>
+    /// <summary>
+    /// Controleert of de battle voorbij is.
+    /// Vuur het event OnBattleOver en unload de battle scene als het over is.
+    /// </summary>
+    /// <returns>True als battle over is, anders false.</returns>
     private bool CheckBattleOver()
     {
-        // If the battle is already marked as over, return true immediately.  
         if (_battleOver) return true;
 
-        // Check if there are any alive characters and enemies.  
         bool charactersAlive = _characterTeam.Any(p => !p.IsDead);
         bool enemiesAlive = _enemyTeam.Any(e => !e.IsDead);
 
-        // If no enemies are alive, the players win.  
         if (!enemiesAlive)
         {
             Debug.Log("PLAYERS WIN");
             _battleOver = true;
             OnBattleOver?.Invoke(true);
 
-            // Register the enemy defeat in the GameManager.  
-            //GameManager.Instance.RegisterEnemyDefeat();
-
-            // Unload the battle scene.  
-            //SceneLoader.Instance.UnloadScene("BattleScene");
-
+            // Registratie en unload kunnen hier worden afgehandeld in GameManager
             return true;
         }
 
-        // If no characters are alive, the enemies win.  
         if (!charactersAlive)
         {
             Debug.Log("ENEMIES WIN");
             _battleOver = true;
             OnBattleOver?.Invoke(false);
 
-            // Unload the battle scene.  
-            //SceneLoader.Instance.UnloadScene("BattleScene");
-
             return true;
         }
 
-        // If both teams have alive members, the battle continues.  
         return false;
     }
 
@@ -280,17 +269,17 @@ public class BattleManager : MonoBehaviour
     {
         Debug.Log($"BattleManager noticed {pDeadEntity.name} died");
 
-        // Verwijder uit turn order
+        // Verwijder uit beurtvolgorde
         _turnOrder.Remove(pDeadEntity);
 
-        // Update turnIndex als nodig
+        // Update index als nodig
         if (_currentTurnIndex >= _turnOrder.Count)
             _currentTurnIndex = 0;
 
-        // Informeer UI of andere systemen (indien nodig)
-        //TurnOrderUI.Instance?.RemoveEntity(deadEntity);
+        // Eventueel UI of andere systemen informeren (commented out)
+        // TurnOrderUI.Instance?.RemoveEntity(deadEntity);
 
-        // Check of battle afgelopen is
+        // Check opnieuw of battle over is
         CheckBattleOver();
     }
 
@@ -308,40 +297,33 @@ public class BattleManager : MonoBehaviour
         return GetWeightedRandomByTaunt(aliveCharacters);
     }
 
-    /// <summary>  
-    /// Selects a random entity from the provided list, weighted by their taunt value.  
-    /// </summary>  
-    /// <param name="pEntities">List of entities to select from.</param>  
-    /// <returns>A randomly selected entity, weighted by taunt.</returns>  
+    /// <summary>
+    /// Selecteert een random entity uit een lijst, gewogen op basis van taunt.
+    /// </summary>
+    /// <param name="pEntities">Lijst van entities om uit te kiezen.</param>
+    /// <returns>Gekozen entity op basis van taunt gewichten.</returns>
     public Entity GetWeightedRandomByTaunt(List<Entity> pEntities)
     {
-        // Return null als er geen entities zijn om uit te kiezen  
         if (pEntities.Count == 0) return null;
 
-        // Bereken de totale taunt waarde van alle entities  
         float totalTaunt = pEntities.Sum(e => e.Role.Taunt);
 
-        // Als de totale taunt waarde nul of minder is, gebruik het aantal entities als fallback  
         if (totalTaunt <= 0)
             totalTaunt = pEntities.Count;
 
-        // Genereer een random waarde tussen 0 en de totale taunt waarde  
         float rand = UnityEngine.Random.Range(0f, totalTaunt);
         float cumulative = 0f;
 
-        // Itereer door de entities en selecteer er één op basis van gewogen taunt  
         foreach (Entity entity in pEntities)
         {
-            // Gebruik de taunt waarde van de entity als gewicht, standaard naar 1 als taunt nul is  
             float weight = entity.Role.Taunt > 0 ? entity.Role.Taunt : 1f;
             cumulative += weight;
 
-            // Return de entity als de random waarde binnen zijn cumulatieve gewicht valt  
             if (rand <= cumulative)
                 return entity;
         }
 
-        // Fallback naar de eerste entity in de lijst als er geen selectie is gemaakt  
+        // Fallback: eerste entity kiezen als er geen selectie werd gemaakt
         return pEntities[0];
     }
 
@@ -365,7 +347,7 @@ public class BattleManager : MonoBehaviour
         return _characterTeam.Where(c => !c.IsDead).Cast<Entity>().ToList();
     }
 
-    // Register methods als je ze nodig hebt (bijv. voor runtime aanmaken)
+    // Register methods, handig voor runtime aanmaken van units
     public void RegisterCharacter(Character c) => _characterTeam.Add(c);
     public void RegisterEnemy(Enemy e) => _enemyTeam.Add(e);
 }

@@ -8,6 +8,7 @@ public class Buffer : MonoBehaviour, ICharacter
 
     private float _atk => _character.Stats.GetStatValue(StatModifier.StatType.Atk);
 
+    // Zet de drie skills op het character
     public void InitializeSkills()
     {
         List<Skill> skills = new List<Skill>
@@ -19,6 +20,7 @@ public class Buffer : MonoBehaviour, ICharacter
         _character.SetSkills(skills);
     }
 
+    // Basic aanvalsskill – doet damage op basis van ATK
     public SkillHandler BasicSkill()
     {
         Skill bufferBS = new Skill
@@ -42,6 +44,7 @@ public class Buffer : MonoBehaviour, ICharacter
             });
     }
 
+    // AOE buff die DEF verhoogt bij alle allies
     public SkillHandler SkillOne()
     {
         Skill bufferSO = new Skill
@@ -64,8 +67,8 @@ public class Buffer : MonoBehaviour, ICharacter
                     StatModifier defBuff = new StatModifier(
                         StatModifier.StatType.Def,
                         bufferSO.BuffAmount,
-                        bufferSO.BuffTurns, // turns
-                        bufferSO.IsBuffPercent // procentueel
+                        bufferSO.BuffTurns,
+                        bufferSO.IsBuffPercent
                     );
 
                     ally.ApplyBuff(defBuff);
@@ -74,6 +77,7 @@ public class Buffer : MonoBehaviour, ICharacter
             });
     }
 
+    // Buff voor één ally – verhoogt ATK tijdelijk
     public SkillHandler SkillTwo()
     {
         Skill bufferST = new Skill
@@ -97,13 +101,11 @@ public class Buffer : MonoBehaviour, ICharacter
                         StatModifier.StatType.Atk,
                         bufferST.BuffAmount,
                         bufferST.BuffTurns,
-                        bufferST.IsBuffPercent // procentueel
+                        bufferST.IsBuffPercent
                     );
                     ally.ApplyBuff(atkBuff);
                     Debug.Log($"{_character.name} bufft {ally.name} met +{atkBuff.Value}% ATK voor {atkBuff.Turns} beurten.");
                 }
             });
     }
-
-    
 }

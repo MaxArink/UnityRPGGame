@@ -54,6 +54,8 @@ public class Enemy : Entity
         // Voer de skill uit via Entity's ExecuteSkill
         ExecuteSkill(chosenSkill, targets);
 
+        TickBuffs();
+
         BattleManager.Instance.EndTurn();
     }
 

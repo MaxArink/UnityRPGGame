@@ -7,24 +7,24 @@ using UnityEditor.Experimental.GraphView;
 public class Character : Entity
 {
     private ICharacter _character;
-    
-    //private List<Skill> _skills;
 
     private bool _isDown = false;
     private bool _isDead = false;
-    
+
     public bool IsDown => _isDown;
     public override bool IsDead => _isDead;
 
     protected override void Awake()
     {
         base.Awake();
+        // Haal de ICharacter component op voor extra karakter-functionaliteiten
         _character = GetComponent<ICharacter>();
     }
 
     public override void Initialize(EntityData pData)
     {
         base.Initialize(pData);
+        // Hier kan aanvullende initialisatie als nodig
     }
 
     public override void PerformAction()
@@ -33,7 +33,6 @@ public class Character : Entity
         {
             Debug.LogWarning($"{name} heeft geen skills.");
             BattleManager.Instance.EndTurn();
-
             return;
         }
 
@@ -41,8 +40,10 @@ public class Character : Entity
 
         Debug.Log($"{name} gebruikt de skill {chosenSkill.Name}");
 
+        // Zet het skill target type om naar een TargetingType voor de targetingservice
         TargetingType targetingType = BattleManager.Instance.TargetingUtils.ConvertToTargetingType(chosenSkill.TargetType);
-        
+
+        // Bepaal of de skill bondgenoten moet targeten (Heal of Buff)
         bool targetsAllies = chosenSkill.SkillType == SkillType.Heal || chosenSkill.SkillType == SkillType.Buff;
 
         List<Entity> targets = BattleManager.Instance.TargetingService.GetTargets(targetingType, this, targetsAllies);
@@ -51,31 +52,24 @@ public class Character : Entity
 
         ExecuteSkill(chosenSkill, targets);
 
+        // Werk buffs/debuffs af na de actie
+        TickBuffs();
+
         BattleManager.Instance.EndTurn();
     }
 
     public override void TakeDamage(float pRawDamage)
     {
-        // Bijvoorbeeld: speler kan shield of buffs hebben die schade verder reduceren
-        float modifiedDamage = pRawDamage; // Je kan hier eigen logica toevoegen
+        float modifiedDamage = pRawDamage; // Hier kun je logica toevoegen voor schade-aanpassingen
 
-        // Eigen logica van mij
         base.TakeDamage((float)Math.Round(modifiedDamage));
 
-
-        //if (BaseStats.Hp <= 0 && !_isDown)
-        //{
-        //    _isDown = true;
-        //    Debug.Log($"{name} is verslagen!");
-
-        //}
-
+        // Check of character dood is en update status
         if (BaseStats.Hp <= 0 && !_isDead)
         {
             _isDead = true;
             Debug.Log($"{name} is verslagen!");
         }
-        // Extra character-specifieke logica...
     }
 
     protected override void Die()
@@ -93,8 +87,8 @@ public class Character : Entity
         return Skills[index];
     }
 
-    public List<Skill> GetSkills() 
-    { 
-        return _skills; 
+    public List<Skill> GetSkills()
+    {
+        return _skills;
     }
 }

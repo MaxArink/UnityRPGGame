@@ -16,8 +16,8 @@ public class InputSwitcher : MonoBehaviour
     public void ToggleInput()
     {
         // Verwijder huidige inputcomponenten
-        var keyboardInput = _player.GetComponent<PlayerInputKeyboard>();
-        var controllerInput = _player.GetComponent<PlayerInputController>();
+        PlayerInputKeyboard keyboardInput = _player.GetComponent<PlayerInputKeyboard>();
+        PlayerInputController controllerInput = _player.GetComponent<PlayerInputController>();
 
         if (keyboardInput != null)
             Destroy(keyboardInput);

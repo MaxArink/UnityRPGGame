@@ -9,8 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9dd4efa051de2584e97ab2dbab637b02, type: 3}
-  m_Name: PlainsEncounterBoss
+  m_Script: {fileID: 11500000, guid: 684b9ea3289e67b478c90a8af82bf3a0, type: 3}
+  m_Name: DarkGuardBaseStats
   m_EditorClassIdentifier: 
-  _enemyLineup:
-  - {fileID: 11400000, guid: 9e6b8dbe983832640b5178d10a7199e6, type: 2}
+  _hp: 1500
+  _atk: 60
+  _def: 150
+  _speed: 80

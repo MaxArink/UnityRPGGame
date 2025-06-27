@@ -1,6 +1,4 @@
 using UnityEngine;
-using System;
-using System.Linq;
 using System.Collections.Generic;
 
 public class Cleric : MonoBehaviour, ICharacter
@@ -8,6 +6,7 @@ public class Cleric : MonoBehaviour, ICharacter
     private Character _character => GetComponent<Character>();
     private float _hp => _character.Stats.GetStatValue(StatModifier.StatType.Hp);
 
+    // Stel skills in
     public void InitializeSkills()
     {
         List<Skill> skills = new List<Skill>
@@ -19,6 +18,7 @@ public class Cleric : MonoBehaviour, ICharacter
         _character.SetSkills(skills);
     }
 
+    // Basis aanval
     public SkillHandler BasicSkill()
     {
         Skill clericBS = new Skill
@@ -42,6 +42,7 @@ public class Cleric : MonoBehaviour, ICharacter
             });
     }
 
+    // Heal één bondgenoot
     public SkillHandler SkillOne()
     {
         Skill clericSO = new Skill
@@ -66,6 +67,7 @@ public class Cleric : MonoBehaviour, ICharacter
             });
     }
 
+    // Heal alle bondgenoten
     public SkillHandler SkillTwo()
     {
         Skill clericST = new Skill

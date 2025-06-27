@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class Entity : MonoBehaviour
@@ -18,7 +17,7 @@ public class Entity : MonoBehaviour
 
     private float _currentHp;
     private float _maxHp;
-    
+
     private List<Entity> _adjacentAllies = new List<Entity>();
 
     public BaseStats BaseStats => _baseStats;
@@ -34,9 +33,9 @@ public class Entity : MonoBehaviour
 
     public List<Entity> AdjacentAllies => _adjacentAllies;
 
-
     protected virtual void Awake()
     {
+        // Als EntityData aanwezig is, initialiseer deze entity automatisch
         if (_entityData != null)
             Initialize(_entityData);
     }
@@ -51,27 +50,31 @@ public class Entity : MonoBehaviour
 
         _stats = new StatCalculator(_baseStats);
 
+        // HP initialiseren op max waarde
         _maxHp = _stats.GetStatValue(StatModifier.StatType.Hp);
         _currentHp = _maxHp;
 
         _skills.Clear();
-        // Skills kunnen hier later ingesteld worden via SetSkills of andere methode
+        // Skills kunnen later via SetSkills toegevoegd worden
     }
 
     public virtual void PerformAction()
     {
+        // Indien dood, sla beurt over en eindig beurt
         if (IsDead)
         {
             BattleManager.Instance.EndTurn();
             return;
         }
 
+        // Kies target op basis van type Entity (Character of Enemy)
         Entity target = this is Character
             ? BattleManager.Instance.GetRandomAliveEnemy()
             : BattleManager.Instance.GetRandomAliveCharacter();
 
         if (target != null)
         {
+            // Bereken en pas schade toe
             float damage = CalculateDamage(1f, StatModifier.StatType.Atk);
             Debug.Log($"{name} valt {target.name} aan voor {damage} schade.");
             target.TakeDamage(damage);
@@ -96,13 +99,15 @@ public class Entity : MonoBehaviour
             switch (pSkill.SkillType)
             {
                 case SkillType.Attack:
-                    // Power is een factor, bv 0.6 voor 60%
+                    // Schade berekenen en toepassen op target
                     float damage = CalculateDamage(pSkill.Power, pSkill.BaseStatForDamage);
                     target.TakeDamage(damage);
                     Debug.Log($"{name} valt {target.name} aan met {pSkill.Name} voor {damage} schade.");
                     break;
+
                 case SkillType.Heal:
-                    float healAmount = CalculateHeal(pSkill.Power, pSkill.BaseStatForDamage/*, skill.IsPercentHeal*/);
+                    // Genezen van target
+                    float healAmount = CalculateHeal(pSkill.Power, pSkill.BaseStatForDamage);
                     target.Heal(healAmount);
                     Debug.Log($"{name} geneest {target.name} voor {healAmount} HP met {pSkill.Name}.");
                     break;
@@ -110,7 +115,7 @@ public class Entity : MonoBehaviour
                 case SkillType.Buff:
                     if (pSkill.BuffType.HasValue)
                     {
-                        // Maak een StatModifier aan met power als waarde, en bv 3 turns en procentueel flag
+                        // Buff toepassen met gegeven parameters
                         StatModifier buff = new StatModifier(pSkill.BuffType.Value, pSkill.BuffAmount, pSkill.BuffTurns, pSkill.IsBuffPercent);
                         target.ApplyBuff(buff);
                         Debug.Log($"{name} bufft {target.name} met {pSkill.BuffType.Value} +{pSkill.BuffAmount}{(pSkill.IsBuffPercent ? "%" : "")} voor {pSkill.BuffTurns} beurt(en) via {pSkill.Name}.");
@@ -120,9 +125,9 @@ public class Entity : MonoBehaviour
                 case SkillType.Debuff:
                     if (pSkill.BuffType.HasValue)
                     {
+                        // Debuff toepassen (negatieve buff)
                         StatModifier debuff = new StatModifier(pSkill.BuffType.Value, -Mathf.Abs(pSkill.BuffAmount), pSkill.BuffTurns, pSkill.IsBuffPercent);
-
-                        target.ApplyBuff(debuff); // of target.ApplyDebuff(modifier) als je die apart hebt
+                        target.ApplyBuff(debuff);
                         Debug.Log($"{name} geeft een debuff aan {target.name}: {pSkill.BuffType.Value} {debuff.Value} ({pSkill.BuffTurns} beurten)");
                     }
                     break;
@@ -142,6 +147,7 @@ public class Entity : MonoBehaviour
 
     public virtual void TickBuffs()
     {
+        // Laat buffs/debuffs aftellen per beurt
         _stats.TickModifiers();
     }
 
@@ -151,25 +157,15 @@ public class Entity : MonoBehaviour
         return baseValue * pPowerMultiplier;
     }
 
-    protected float CalculateHeal(float pPowerMultiplier, StatModifier.StatType pBaseStat/*, bool pIsPercent*/)
+    protected float CalculateHeal(float pPowerMultiplier, StatModifier.StatType pBaseStat)
     {
         float baseValue = Stats.GetStatValue(pBaseStat);
-        return baseValue * pPowerMultiplier;// als ik dat andere wil toeveogen kan dat
-
-        //if (pIsPercent)
-        //{
-        //    // Bijvoorbeeld: 0.2f = 20% van baseValue
-        //    return baseValue * pPowerMultiplier;
-        //}
-        //else
-        //{
-        //    // Bijvoorbeeld: 1.5f = flat power factor op baseValue
-        //    return baseValue * pPowerMultiplier;
-        //}
+        return baseValue * pPowerMultiplier;
     }
 
     public virtual void TakeDamage(float pRawDamage)
     {
+        // Defensie vermindert de schade volgens een formule
         float def = Stats.GetStatValue(StatModifier.StatType.Def);
         float defMultiplier = 1f - (def / (def + 200f));
         float finalDamage = Mathf.Max(Mathf.Floor(pRawDamage * defMultiplier), 1f);
@@ -183,8 +179,20 @@ public class Entity : MonoBehaviour
 
     public virtual void Heal(float pAmount)
     {
+        // Geneest, maar niet boven max HP
         _currentHp = Mathf.Min(_currentHp + pAmount, MaxHp);
         Debug.Log($"{name} wordt geheeld voor {pAmount}, huidige HP: {_currentHp}/{StatModifier.StatType.Hp}");
+    }
+
+    public virtual void Revive(float hpAmount)
+    {
+        if (!IsDead) return;
+
+        float maxHp = Stats.GetStatValue(StatModifier.StatType.Hp);
+        _currentHp = Mathf.Min(hpAmount, maxHp);
+
+        // Visuele effecten kunnen hier toegevoegd worden
+        Debug.Log($"{name} is herrezen met {CurrentHp} HP.");
     }
 
     protected virtual void Die()
@@ -193,8 +201,6 @@ public class Entity : MonoBehaviour
         gameObject.SetActive(false);
 
         OnDie.Invoke(this);
-        //OnDie=null;
-        //BattleManager.Instance?.RemoveFromTurnOrder(this);
     }
 
     public void SetSkills(List<Skill> pSkills)
@@ -202,17 +208,15 @@ public class Entity : MonoBehaviour
         _skills = pSkills ?? new List<Skill>();
     }
 
-    // Helper om buren up-to-date te houden
+    // ** Wordt momenteel niet gebruikt, maar houdt buren up-to-date voor bv buff targeting **
     public void UpdateAdjacents(List<Entity> pAllAllies)
     {
         AdjacentAllies.Clear();
 
-        // Simpel voorbeeld: voeg buren toe die 'naast' deze entity staan
-        // Je bepaalt hier de logica, bijvoorbeeld afstand of custom rules
+        // Voeg buren toe binnen bepaalde afstand, excl. zichzelf en doden
+        float maxDistance = 2.0f;
 
-        float maxDistance = 2.0f; // bv max 2 units afstand om als buur te tellen
-
-        foreach (var ally in pAllAllies)
+        foreach (Entity ally in pAllAllies)
         {
             if (ally == this) continue;
             if (Vector3.Distance(transform.position, ally.transform.position) <= maxDistance && !ally.IsDead)

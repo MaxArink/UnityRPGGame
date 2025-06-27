@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: PlainsEncounter1
   m_EditorClassIdentifier: 
   _enemyLineup:
-  - {fileID: 11400000, guid: a7ce62c9d6a73ac4796d1fd9b1340b65, type: 2}
+  - {fileID: 11400000, guid: a54c7e1f71ee76d4a99ee10cb3bd7de7, type: 2}
   - {fileID: 11400000, guid: a7ce62c9d6a73ac4796d1fd9b1340b65, type: 2}
   - {fileID: 11400000, guid: a7ce62c9d6a73ac4796d1fd9b1340b65, type: 2}

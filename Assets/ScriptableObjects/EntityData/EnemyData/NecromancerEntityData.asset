@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5c77caa9a942c744b29acf4a4884213, type: 3}
+  m_Name: NecromancerEntityData
+  m_EditorClassIdentifier: 
+  _name: Necromancer
+  _portrait: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
+  _prefab: {fileID: 7103772500344300678, guid: 83004d1e4d612b9429b25d41a26fb8d7, type: 3}
+  _baseStats: {fileID: 11400000, guid: 947552d16839c2141a527c5055cad014, type: 2}
+  _entityStats: {fileID: 11400000, guid: 6303ac916d219d141b66708079d6dbf6, type: 2}
+  _role: {fileID: 11400000, guid: 2814a3d6f104833419d77df61634f8f7, type: 2}

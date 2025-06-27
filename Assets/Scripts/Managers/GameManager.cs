@@ -8,10 +8,11 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    [SerializeField] private List<EntityData> _teamLineup;
+    [SerializeField] private List<EntityData> _teamLineup = new List<EntityData>();
+    private List<EntityData> _allAvailableCharacters = new List<EntityData>();
 
     [Header("Test Be Gone")]
-    [SerializeField] private ChallengeData _challenge = null;
+    [SerializeField] private ChallengeData _challenge = null; // moet niet serialized in de editor, maar wel in de inspector zichtbaar zijn voor testen
 
     // ** temp code wie ik hier niet wil laten staan **
     private int _enemiesDefeated = 0;
@@ -21,9 +22,11 @@ public class GameManager : MonoBehaviour
     private ChallengeTrigger _pendingTrigger;
     private ChallengeData _pendingBattleData;
 
-    public ChallengeData PendingBattleData { get => _pendingBattleData; set => _pendingBattleData = value; }
+    public int EnemiesDefeated { get => _enemiesDefeated; set => _enemiesDefeated = value; }
 
     public List<EntityData> TeamLineup { get => _teamLineup; private set => _teamLineup = value; }
+    public List<EntityData> AllAvailableCharacters { get => _allAvailableCharacters; set => _allAvailableCharacters = value; }
+    public ChallengeData PendingBattleData { get => _pendingBattleData; set => _pendingBattleData = value; }
 
     private void Awake()
     {
@@ -42,18 +45,6 @@ public class GameManager : MonoBehaviour
         if (BattleManager.Instance != null)
             BattleManager.Instance.OnBattleOver += HandleBattleEnded;
     }
-
-    //private void Start()
-    //{
-    //    if (_pendingBattleData == null)
-    //        _pendingBattleData = _challenge;
-    //}
-
-    //private void Update()
-    //{
-    //    if (Input.GetKeyDown(KeyCode.P))
-    //        BattleManager.Instance.StartBattle(_challenge);
-    //}
 
     public void SetPendingBattleData(ChallengeData pData, ChallengeTrigger pTrigger)
     {

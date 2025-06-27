@@ -23,10 +23,10 @@ public class Slime : MonoBehaviour, IEnemy
     public void InitializeSkills()
     {
         List<Skill> slimeSkills = new List<Skill>
-       {
+        {
            SlimeBop().ToSkill(),
            SlimeDrip().ToSkill()
-       };
+        };
 
         Enemy.SetSkills(slimeSkills);
     }
@@ -85,3 +85,4 @@ public class Slime : MonoBehaviour, IEnemy
             });
     }
 }
+

@@ -3,10 +3,11 @@ using UnityEngine.SceneManagement;
 
 public class SceneLoader : MonoBehaviour
 {
-    public static SceneLoader Instance {  get; private set; }
+    public static SceneLoader Instance { get; private set; }
 
     private void Awake()
     {
+        // Zorgt dat er maar één instance is (singleton pattern)
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -14,19 +15,19 @@ public class SceneLoader : MonoBehaviour
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject);
+        DontDestroyOnLoad(gameObject); // Houdt deze gameobject persistent tussen scenes
     }
 
     /// <summary>
-    /// Vervangt de huidige scene met een andere (niet additief).
+    /// Laadt een nieuwe scene en vervangt de huidige volledig.
     /// </summary>
     public void LoadSceneSingle(string sceneName)
     {
         SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
     }
-    
+
     /// <summary>
-    /// Laadt een nieuwe scene als additive (bovenop de huidige).
+    /// Laadt een scene additief (bovenop huidige scenes), alleen als deze nog niet geladen is.
     /// </summary>
     public void LoadSceneAdditive(string sceneName)
     {
@@ -37,7 +38,7 @@ public class SceneLoader : MonoBehaviour
     }
 
     /// <summary>
-    /// Sluit een scene die eerder additief geladen was.
+    /// Unload een additief geladen scene als deze geladen is.
     /// </summary>
     public void UnloadScene(string sceneName)
     {

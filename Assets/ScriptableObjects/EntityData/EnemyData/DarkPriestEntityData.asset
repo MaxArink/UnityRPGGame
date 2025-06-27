@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5c77caa9a942c744b29acf4a4884213, type: 3}
+  m_Name: DarkPriestEntityData
+  m_EditorClassIdentifier: 
+  _name: Dark Priest
+  _portrait: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
+  _prefab: {fileID: 7103772500344300678, guid: 52bd3d087d8988746a2bf9d003ec40b1, type: 3}
+  _baseStats: {fileID: 11400000, guid: a6c723b4cc607c24f9b939ecd6cee675, type: 2}
+  _entityStats: {fileID: 11400000, guid: 6303ac916d219d141b66708079d6dbf6, type: 2}
+  _role: {fileID: 11400000, guid: 060439630f7f8344093c86fe9e85e116, type: 2}
