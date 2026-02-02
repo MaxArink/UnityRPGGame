@@ -46,6 +46,17 @@ public class GameManager : MonoBehaviour
             BattleManager.Instance.OnBattleOver += HandleBattleEnded;
     }
 
+    private void Update()
+    {
+        // ** Temporary code for testing purposes only. Remove or refactor in production. **
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            Debug.Log("Starting test battle...");
+            SetPendingBattleData(_challenge, null); // Geen trigger nodig voor testen
+            SceneLoader.Instance.LoadSceneAdditive("BattleScene");
+        }
+    }
+
     public void SetPendingBattleData(ChallengeData pData, ChallengeTrigger pTrigger)
     {
         _pendingBattleData = pData;

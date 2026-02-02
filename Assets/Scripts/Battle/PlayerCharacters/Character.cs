@@ -35,25 +35,14 @@ public class Character : Entity
             return;
         }
 
-        Skill chosenSkill = Skills[UnityEngine.Random.Range(0, Skills.Count)];
+        BattleUIManager.Instance.ShowSkillOptions(this);
+    }
 
-        Debug.Log($"{name} gebruikt de skill {chosenSkill.Name}");
-
-        // Zet het skill target type om naar een TargetingType voor de targetingservice
-        TargetingType targetingType = BattleManager.Instance.TargetingUtils.ConvertToTargetingType(chosenSkill.TargetType);
-
-        // Bepaal of de skill bondgenoten moet targeten (Heal of Buff)
-        bool targetsAllies = chosenSkill.SkillType == SkillType.Heal || chosenSkill.SkillType == SkillType.Buff;
-
-        List<Entity> targets = BattleManager.Instance.TargetingService.GetTargets(targetingType, this, targetsAllies);
-
-        Debug.Log($"{name} targets voor {chosenSkill.Name}: {string.Join(", ", targets.ConvertAll(t => t.name))}");
-
-        ExecuteSkill(chosenSkill, targets);
-
-        // Werk buffs/debuffs af na de actie
+    public void PerformSkill(Skill pSkill, List<Entity> pTargets)
+    {
+        ExecuteSkill(pSkill, pTargets);
+        Debug.Log($"{name} gebruikt de skill {pSkill.Name}");
         TickBuffs();
-
         BattleManager.Instance.EndTurn();
     }
 
